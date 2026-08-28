@@ -1,0 +1,7 @@
+run_id,mode,patent_id,expected_total,batch_count,n_near,n_adjacent,n_far,batch_index,batch_id,situation_id,situation_name,distance,overlay_id,overlay_name,rotations,expected_batch_count,included_sample_rows,status
+R-DEMO-FULL19-OTB094,FULL19,OTB094,570,19,,,,5,E,E,製造業,near,,,"0,1,2,3,4",30,1,sample_only
+R-DEMO-FULL19-OTB094,FULL19,OTB094,570,19,,,,9,I,I,卸売業・小売業,near,,,"0,1,2,3,4",30,1,sample_only
+R-DEMO-COVERAGE12-OTB094,COVERAGE12,OTB094,360,12,3,3,4,7,H,H,運輸業・郵便業,adjacent,,,"0,1,2,3,4",30,1,sample_only
+R-DEMO-COVERAGE12-OTB094,COVERAGE12,OTB094,360,12,3,3,4,11,I-X03,I,卸売業・小売業,frontier,X03,循環・再製造,"0,1,2,3,4",30,1,sample_only
+R-DEMO-MIXED19-OTB094,MIXED19,OTB094,342,19,5,6,8,5,E,E,製造業,near,,,0,6,1,sample_only
+R-DEMO-MIXED19-OTB094,MIXED19,OTB094,342,19,5,6,8,2,B,B,漁業,far,,,"0,1,2,3,4",30,1,sample_only
