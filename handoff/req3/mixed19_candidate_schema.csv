@@ -1,0 +1,18 @@
+order,column_name,group,importance,fixed_or_ai,meaning,why_it_exists,how_req3_should_use_it,example
+1,candidate_id,識別・被覆,TRACEABILITY,固定ルール,候補を識別するID。{PatentID}-{SituationID}-{StakeholderID}-{ContextID},Req2内の欠落・重複を検査する,評価結果を元候補へ結び付ける。実運用ではrun_idと組み合わせる,OTB094-E-S2-C3
+2,stakeholder_id,発想の視点,CONTEXT,固定分類,Stakeholder GroupのID（S1〜S5）,誰にとっての価値かを固定する,主体別の評価・被覆確認に使う,S2
+3,stakeholder_name,発想の視点,CONTEXT,固定分類,Stakeholder Group名,IDだけでは読みにくいため名称を付ける,候補の価値受領者・意思決定者を理解する,導入・評価・意思決定主体
+4,situation_id,発想の視点,CONTEXT,固定分類,日本標準産業分類ベースのSituation ID（A〜S）,19産業のどこに置いた発想かを示す,産業別の評価・被覆確認に使う,E
+5,situation_name,発想の視点,CONTEXT,固定分類,Situation名,候補の産業・領域を人が読めるようにする,適用領域と既存用途からの差を理解する,製造業
+6,distance,識別・被覆,TRACEABILITY,AI推論後に人が承認,既存用途からの構造的距離（near／adjacent／far）,Mixed19の探索密度を決める,品質点として使わず、探索条件・比較軸として保持する,near
+7,coverage_rotation,識別・被覆,TRACEABILITY,決定論的計算,Stakeholder × Contextの割当rotation（0〜4）,Mixed19のtuple被覆と再現性を保証する,評価対象ではなく生成監査用に使う,0
+8,context_id,発想の視点,CONTEXT,固定分類,BtoB意味文脈のID（C1〜C6）,同じ技術・産業でも異なる意味を発散する,意味文脈別の評価・被覆確認に使う,C3
+9,context_name,発想の視点,CONTEXT,固定分類,BtoB意味文脈名,Context IDを人が読めるようにする,Interpretationがどの観点から生まれたか理解する,人・能力
+10,organization_archetype,主体の具体化,CONTEXT,AI推論,対象Situationに存在し得る組織類型,抽象Stakeholderを現実のBtoB主体へ具体化する,事業性・導入主体・受益主体の検討に使う,電子機器メーカーの品質保証部門
+11,role,主体の具体化,CONTEXT,AI推論,組織内外で技術に関与する具体的役割,誰が判断・利用・責任を持つかを示す,ユーザー、意思決定者、評価者の区別に使う,受入品質保証責任者
+12,interpretation,意味的価値,CORE,AI生成仮説,このStakeholderがこのSituationに置かれ、このContextから見たときに特許が持つ意味・価値,Req2の発散結果そのものを表す,Req3の主評価対象。新規性、有用性、事業性、意外性等を評価する,個体照合が、熟練者の判定能力を組織へ埋め込む品質保証基盤になる
+13,technical_bridge,解釈の根拠,CRITICAL SUPPORT,FACTとAI推論,元特許の能力が新Situationで、なぜ・どのように機能し得るか,単なる連想と技術に接続した転用仮説を区別する,技術適合性・実現可能性を評価する根拠として読む,機器固有の電磁特性を登録値と比較して個体を照合する
+14,behavior_change,解釈の効果,CRITICAL SUPPORT,AI生成仮説,導入前後でStakeholderの判断・行動・関係がどう変わるか,用途名ではなく意味的価値になっているかを示す,有用性と業務・関係変化を評価する根拠として読む,熟練者の事後確認から、担当者が受入時に照合できる運用へ変わる
+15,assumption,不確実性,CRITICAL SUPPORT,AI生成仮定,候補成立に必要だが入力特許では確認できない条件,不確実な候補をReq2で削除せずReq3へ渡す,検証負荷、リスク、追加調査項目として扱う,量産工程で必要速度と再測定安定性を満たす
+16,evidence_status,不確実性,CAUTION,AIによる根拠区分,technical_bridgeの根拠状態（FACT／INFERENCE／ASSUMPTION）,特許記載とAI推論・仮定を混同しない,候補全体の品質点と誤認せず、根拠確認の優先度に使う,INFERENCE
+17,duplicate_note,不確実性,CAUTION,AI推論,類似候補IDと、統合せず残すべき差。類似なしはnone,Req2で候補を削除せず類似関係を引き継ぐ,Req3の重複整理・代表候補選定に使う,none
