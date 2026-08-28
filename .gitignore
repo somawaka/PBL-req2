@@ -1,0 +1,6 @@
+# Generated distribution archives
+*.zip
+
+# Local OS/editor files
+.DS_Store
+Thumbs.db
