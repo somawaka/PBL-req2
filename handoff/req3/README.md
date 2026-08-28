@@ -1,70 +1,105 @@
-# Req2 → Req3 受け渡し仕様
+# Mixed19｜Req②からReq③への出力仕様
 
-## 目的
+## 結論
 
-Req2が生成するBtoB文脈・意味的価値候補を、Req3の評価Gemまたは将来のバックエンドへ渡すための暫定インターフェースです。
+Req③が受け取る単位は、**意味的価値候補1件につき1行、全17列**です。
 
-現時点ではGemini APIによる570件等の完全実行を行わず、カラム定義と少数の設計サンプルを提供します。
+17列のうち中心となる成果は `interpretation` です。これは、
+
+> このStakeholderが、このSituationに置かれ、このContextから見たとき、この特許はどのような意味・価値を持つのか
+
+を自然言語で表した、Req②の発散結果そのものです。
+
+他の列は、`interpretation` を理解・評価・追跡するための補助情報です。Req②では候補を採点・足切りせず、未評価の `IDEA / HYPOTHESIS` としてReq③へ渡します。
+
+## 出力の読み方
+
+| 層 | 主な列 | 答える問い | Req③での役割 |
+|---|---|---|---|
+| 発想の視点 | `stakeholder_*`、`situation_*`、`context_*`、`organization_archetype`、`role` | 誰が、どの産業・意味文脈から見ているか | 評価対象の前提条件を理解する |
+| **意味的価値** | **`interpretation`** | **その視点から特許が持つ新しい意味・価値は何か** | **新規性・有用性・事業性・意外性等の主評価対象** |
+| 技術との接続 | `technical_bridge` | 元特許の能力が、新しいSituationでなぜ機能し得るか | 技術適合性・実現可能性の根拠にする |
+| 行動・関係の変化 | `behavior_change` | 導入前後で判断・行動・関係がどう変わるか | 単なる用途名ではなく意味的価値になっているかを見る |
+| 不確実性 | `assumption`、`evidence_status` | 何が未確認で、どこまでが事実・推論・仮定か | リスクと追加調査項目を特定する |
+| 識別・被覆 | `candidate_id`、`distance`、`coverage_rotation`、`duplicate_note` | どの候補で、どの探索条件から生まれたか | 欠落・類似・探索偏りを確認する |
+
+## Mixed19の候補カラム
+
+候補表では、次の順序を固定します。
+
+1. `candidate_id`
+2. `stakeholder_id`
+3. `stakeholder_name`
+4. `situation_id`
+5. `situation_name`
+6. `distance`
+7. `coverage_rotation`
+8. `context_id`
+9. `context_name`
+10. `organization_archetype`
+11. `role`
+12. `interpretation`
+13. `technical_bridge`
+14. `behavior_change`
+15. `assumption`
+16. `evidence_status`
+17. `duplicate_note`
+
+各列の定義、生成主体、設置理由、Req③での使い方は `mixed19_candidate_schema.csv` またはWorkbookの `Column Guide` シートに記載しています。
+
+## 特に重要な列
+
+### interpretation
+
+Req②が発散する**意味的価値仮説**です。単なる転用先・用途名ではなく、技術がStakeholderの認識、判断、行動、関係、責任などをどう変えるかまで含めます。Req③はこの列を主評価対象にします。
+
+### technical_bridge
+
+元特許のどの能力を、対象Situationの何へ接続するのかを説明します。`interpretation` が単なる連想ではなく、技術に接続した仮説であるかを確かめるための列です。
+
+### behavior_change
+
+導入前と導入後の違いを示します。用途を挙げただけの候補と、Stakeholderに新しい意味的価値を生む候補を区別する助けになります。
+
+### assumption
+
+候補成立に必要だが、入力特許だけでは確認できない条件です。Req②では不確実だからという理由で候補を削除せず、Req③の検証課題として残します。
+
+### evidence_status
+
+`technical_bridge` の根拠状態を `FACT / INFERENCE / ASSUMPTION` で示します。候補全体の品質点や採否ではありません。
+
+### duplicate_note
+
+似ている候補がある場合に、相手のIDと「似ていても残す差」を記録します。Req②では削除せず、Req③で統合・代表化を検討します。類似がなければ `none` です。
+
+## 固定情報とAI生成情報
+
+| 区分 | 列 |
+|---|---|
+| 固定分類・決定論的計算 | `candidate_id`、Stakeholder、Situation、`coverage_rotation`、Context |
+| AI推論後に人間が承認 | `distance` |
+| AIが生成する仮説 | `organization_archetype`、`role`、`interpretation`、`behavior_change`、`assumption`、`duplicate_note` |
+| 特許事実とAI推論を組み合わせる | `technical_bridge`、`evidence_status` |
+
+AIは不足情報を事実として補完しません。推論や成立条件は、それぞれ `evidence_status` と `assumption` に明示します。
 
 ## ファイル
 
 | ファイル | 用途 |
 |---|---|
-| `req2_candidate_schema.csv` | 候補カラムの型、必須性、適用方式、意味、Req3で必要な理由 |
-| `req2_candidate_sample.csv` | OTB094「電磁指紋」を用いた6件のサンプル |
-| `req2_run_manifest_sample.csv` | 方式、予定候補数、batch、距離、rotationとサンプル行の対応 |
-| `req2_output_contract.xlsx` | 上記を人が確認しやすいWorkbookにまとめたもの |
+| `mixed19_candidate_schema.csv` | 17列の定義、設置理由、Req③での使い方 |
+| `mixed19_candidate_sample.csv` | OTB094「電磁指紋」を用いた候補6件 |
+| `mixed19_output_guide.xlsx` | 上記を人が読みやすい4シートに整理したWorkbook |
 
-CSVはUTF-8です。Gemへ渡す場合は、まずREADMEとschemaをKnowledgeとして参照させ、評価対象としてcandidate sampleを入力します。
+サンプルは `near`、`adjacent`、`far` を各2件含みます。完全なGem/API実行結果でも、品質評価済みの候補でもありません。Req③の入力設計、評価列設計、Gem表示を試すためのfixtureです。
 
-## 現行Gem出力との関係
+## Req③での推奨取扱い
 
-現行Gemは、発散前にRun ManifestをMarkdown表で表示し、発散中は候補をbatch単位のMarkdown表で表示します。Gem単体には複数batchを自動でCSVへ統合・保存する機能がありません。
+1. `interpretation` を主評価対象とする。
+2. `technical_bridge`、`behavior_change`、`assumption` を評価理由と検証課題に利用する。
+3. `distance` は品質点ではなく、探索条件・比較軸として扱う。
+4. `evidence_status` は `technical_bridge` の根拠区分として読む。
+5. Req②の17列は上書きせず、Req③の評価点、理由、判定、統合先ID等を新しい列として追加する。
 
-このサンプルCSVでは、Req3へ渡す際の追跡性を確保するため、現行候補列の前に次の4列を追加しています。
-
-| 追加列 | 出所 | 意味 |
-|---|---|---|
-| `run_id` | Run Manifest | Req2の実行単位 |
-| `mode` | Run Manifest | FULL19 / COVERAGE12 / MIXED19 |
-| `patent_id` | 入力・Run Manifest | 元特許・技術シーズ |
-| `batch_id` | Run Manifest | Situationまたはfrontier branch |
-
-候補本体の列は、Stakeholder、Situation、Context、Organization Archetype、Role、Interpretation、Technical Bridge、Behavior Change、Assumption、Evidence Status、Duplicate Noteを中心とします。方式固有列として、Coverage12のoverlay、Mixed19のcoverage rotationがあります。
-
-## 識別ルール
-
-Req3側の候補主キーは、`candidate_id`単独ではなく次を使用します。
-
-`run_id + candidate_id`
-
-同じ特許をFull19、Coverage12、Mixed19で実行すると、同じ`candidate_id`が別runに現れる可能性があるためです。
-
-## 空欄とUNKNOWN
-
-- 空欄：その方式では構造的に該当しない。例：Full19の`overlay_id`、Coverage12の`coverage_rotation`
-- `UNKNOWN`：本来確認したい情報だが入力や根拠から判定できない
-- `ASSUMPTION`：候補を成立させるために明示的に置いた仮定
-
-## Req3での取扱い
-
-1. Run Manifestを読み、方式、予定候補数、batch構成を確認する。
-2. `run_id + candidate_id`の重複と、batchごとの欠落を検査する。
-3. Interpretationを評価対象の中心とする。
-4. Technical Bridge、Behavior Change、Assumptionを、評価理由と検証課題に利用する。
-5. Req2の元列は上書きせず、Req3の評価点、理由、判定、統合先ID等を新しい列として追加する。
-
-`evidence_status`はTechnical Bridgeの根拠状態です。候補全体が実証済みか、良い候補かを示す点数ではありません。
-
-`duplicate_note`もReq2による削除結果ではありません。似ている候補を残したまま、Req3で統合・代表化を検討するためのメモです。
-
-## サンプルの位置付け
-
-サンプルはOTB094「電磁指紋」の既存期待出力を、現行Full19 / Coverage12 / Mixed19のカラムへ写像した設計例です。
-
-- 完全なGem実行結果ではありません。
-- 候補の品質評価は行っていません。
-- 570件、360件、Mixed19全件を代表する統計標本ではありません。
-- Req3の入力設計と表示確認のためのfixtureです。
-
-Schema version: `req2-req3-contract-v0.1`
+Schema version: `mixed19-req2-output-v0.2`
