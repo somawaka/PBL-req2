@@ -77,7 +77,40 @@
 
 `{PatentID}-{SituationID}-{StakeholderID}-{ContextID}`
 
-候補データの17列と内部識別子は、要求機能③との接続のため変更しない。候補表の詳細は`05_generation_rules_common.md`に従う。
+候補データの17列と内部識別子は、要求機能③との接続のため変更しない。次の順序を固定する。
+
+1. `candidate_id`
+2. `stakeholder_id`
+3. `stakeholder_name`
+4. `situation_id`
+5. `situation_name`
+6. `distance`
+7. `coverage_rotation`
+8. `context_id`
+9. `context_name`
+10. `organization_archetype`
+11. `role`
+12. `interpretation`
+13. `technical_bridge`
+14. `behavior_change`
+15. `assumption`
+16. `evidence_status`
+17. `duplicate_note`
+
+候補一覧は、次のヘッダーをこの順序で使用した単一のMarkdown表とする。
+
+| candidate_id | stakeholder_id | stakeholder_name | situation_id | situation_name | distance | coverage_rotation | context_id | context_name | organization_archetype | role | interpretation | technical_bridge | behavior_change | assumption | evidence_status | duplicate_note |
+|---|---|---|---|---|---|---:|---|---|---|---|---|---|---|---|---|---|
+
+この英語名は要求機能③へ渡すデータ列として保持する。ユーザー向けの意味説明は`05_generation_rules_common.md`の日本語カラム説明を使う。
+
+表の表示規則：
+
+- 1候補を必ず1行にする。
+- セル内で改行しない。
+- セル内で`|`を使わず、必要なら`／`へ置換する。
+- 不明は`UNKNOWN`、仮定は内容を明記、類似なしは`none`とする。
+- 説明を簡潔にしても、候補行と必須カラムを省略しない。
 
 意味的価値は次の問いへ答える。
 
